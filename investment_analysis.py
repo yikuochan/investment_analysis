@@ -275,6 +275,9 @@ def create_yield_curve_plot_base64():
         t_10y = yf.download("^TNX", start=start_date, end=end_date, progress=False, auto_adjust=True)
         t_30y = yf.download("^TYX", start=start_date, end=end_date, progress=False, auto_adjust=True)
         if t_3m.empty or t_10y.empty or t_30y.empty: return None, {}
+        for _df in [t_3m, t_10y, t_30y]:
+            if isinstance(_df.columns, pd.MultiIndex):
+                _df.columns = _df.columns.droplevel(1)
         yield_data = {'3M': float(t_3m['Close'].iloc[-1]), '10Y': float(t_10y['Close'].iloc[-1]), '30Y': float(t_30y['Close'].iloc[-1])}
         plt.style.use('bmh'); plt.figure(figsize=(12, 6))
         plt.plot(t_3m.index, t_3m['Close'], label='3-Month (^IRX)', color='#e53935', linewidth=1.2, alpha=0.8)
