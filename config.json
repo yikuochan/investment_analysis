@@ -45,6 +45,9 @@
             "vol_low": 50
         }
     },
+    "api_keys": {
+        "fred": ""
+    },
     "symbol_name_map": {
         "^VIX": "恐慌指數",
         "^GSPC": "標普 500",

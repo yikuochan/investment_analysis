@@ -153,13 +153,14 @@ def calculate_all_indicators(df):
     
     return df
 
-def save_to_json(fundamental_data, yield_data, market_data, summary_items, filename="technical_data.json"):
+def save_to_json(fundamental_data, yield_data, market_data, summary_items, macro_us=None, filename="technical_data.json"):
     """將收集到的資料儲存至 JSON 檔案"""
     data = {
         "fundamental": fundamental_data,
         "yield": yield_data,
         "market": market_data,
         "summary": summary_items,
+        "macro_us": macro_us or [],
         "last_updated": datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
     }
     try:
@@ -289,10 +290,10 @@ def create_yield_curve_plot_base64():
     except Exception as e:
         print(f"[Error] 產生殖利率圖表時發生錯誤: {e}"); return None, {}
 
-def generate_html_report(report_data, date_str, summary_html, yield_curve_plot_b64=None, fundamental_data=None, yield_data=None, market_data=None, summary_items=None):
+def generate_html_report(report_data, date_str, summary_html, yield_curve_plot_b64=None, fundamental_data=None, yield_data=None, market_data=None, summary_items=None, macro_us=None):
     """使用 Jinja2 生成 HTML 報告"""
     # 僅保留基本框架資料於 HTML，將詳細數據存入 JSON
-    save_to_json(fundamental_data, yield_data, market_data, summary_items)
+    save_to_json(fundamental_data, yield_data, market_data, summary_items, macro_us=macro_us)
     
     env = Environment(loader=FileSystemLoader(TEMPLATE_DIR))
     try:
@@ -395,9 +396,36 @@ def main():
             icon = "▲" if item['change'] > 0 else "▼" if item['change'] < 0 else "-"
             summary_html += f'<div class="summary-card"><div class="summary-title">{item["symbol"]}</div><div class="summary-price">{item["close"]:.2f}</div><div class="summary-change {cls}">{icon} {item["change"]:.2f}%</div></div>'
     yield_plot, yield_data = create_yield_curve_plot_base64()
-    if all_report_data: 
-        generate_html_report(all_report_data, current_date_str, summary_html, yield_plot, 
-                             all_fundamental_data, yield_data, all_market_data, all_summary_items)
+
+    # --- FRED 美國總經指標抓取 ---
+    macro_us = []
+    try:
+        from data_sources.fred_fetcher import fetch_all_us_macro
+        print("\n--- 正在抓取 FRED 美國總經指標 ---")
+        macro_us = fetch_all_us_macro(config=config)
+        if macro_us:
+            # 更新 macro_cache.json 的 US_MACRO 欄位（保留 TW_MACRO）
+            macro_cache = {}
+            macro_cache_file = "macro_cache.json"
+            if os.path.exists(macro_cache_file):
+                try:
+                    with open(macro_cache_file, 'r', encoding='utf-8') as f:
+                        macro_cache = json.load(f)
+                except (json.JSONDecodeError, IOError):
+                    pass
+            macro_cache["US_MACRO"] = macro_us
+            with open(macro_cache_file, 'w', encoding='utf-8') as f:
+                json.dump(macro_cache, f, ensure_ascii=False, indent=4)
+            print(f"[Success] 已更新 {macro_cache_file} 中的 US_MACRO ({len(macro_us)} 項)")
+    except ImportError:
+        print("[Warning] data_sources.fred_fetcher 模組不可用，跳過 FRED 資料抓取")
+    except Exception as e:
+        print(f"[Warning] FRED 資料抓取過程發生錯誤: {e}")
+
+    if all_report_data:
+        generate_html_report(all_report_data, current_date_str, summary_html, yield_plot,
+                             all_fundamental_data, yield_data, all_market_data, all_summary_items,
+                             macro_us=macro_us)
     else: print("[Error] 沒有任何資料可生成報告。")
 
 if __name__ == "__main__":

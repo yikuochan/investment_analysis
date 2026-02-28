@@ -4,3 +4,4 @@ matplotlib
 mplfinance
 pytz
 jinja2
+fredapi
