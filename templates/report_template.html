@@ -186,6 +186,9 @@
                     30Y: {{ "%.2f"|format(yield_data.get('30Y', 0)) }}%
                     {% endif %}
                  </div>
+                 <p style="font-size: 0.75rem; color: #6b7280; text-align: right; margin-top: 0.25rem;">
+                    資料來源：{% if yield_source == 'alpha_vantage' %}Alpha Vantage{% elif yield_source == 'yfinance' %}yfinance{% else %}暫時無法取得{% endif %}
+                 </p>
             </div>
             
             <div class="card" style="margin-top: 25px; padding: 20px;">
