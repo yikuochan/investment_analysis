@@ -290,7 +290,7 @@ def create_yield_curve_plot_base64():
     except Exception as e:
         print(f"[Error] 產生殖利率圖表時發生錯誤: {e}"); return None, {}
 
-def generate_html_report(report_data, date_str, summary_html, yield_curve_plot_b64=None, fundamental_data=None, yield_data=None, market_data=None, summary_items=None, macro_us=None):
+def generate_html_report(report_data, date_str, summary_html, yield_curve_plot_b64=None, fundamental_data=None, yield_data=None, market_data=None, summary_items=None, macro_us=None, yield_source='yfinance'):
     """使用 Jinja2 生成 HTML 報告"""
     # 僅保留基本框架資料於 HTML，將詳細數據存入 JSON
     save_to_json(fundamental_data, yield_data, market_data, summary_items, macro_us=macro_us)
@@ -301,7 +301,8 @@ def generate_html_report(report_data, date_str, summary_html, yield_curve_plot_b
         render_vars = {
             "date_str": date_str, "summary_html": summary_html, "report_data": report_data,
             "kd_window": KD_WINDOW, "bias_periods": BIAS_PERIODS,
-            "yield_curve_plot_b64": yield_curve_plot_b64, "yield_data": yield_data
+            "yield_curve_plot_b64": yield_curve_plot_b64, "yield_data": yield_data,
+            "yield_source": yield_source
         }
         html_output = template.render(**render_vars)
         filename = f"report/invest_analysis_{date_str.replace('-', '')}.html"
@@ -397,6 +398,25 @@ def main():
             summary_html += f'<div class="summary-card"><div class="summary-title">{item["symbol"]}</div><div class="summary-price">{item["close"]:.2f}</div><div class="summary-change {cls}">{icon} {item["change"]:.2f}%</div></div>'
     yield_plot, yield_data = create_yield_curve_plot_base64()
 
+    # --- Alpha Vantage 殖利率資料覆蓋 ---
+    yield_source = 'yfinance'  # 預設來源（圖表仍用 yfinance 歷史資料）
+    try:
+        from data_sources.yield_fetcher import get_treasury_yields
+        print("\n--- 正在透過 Alpha Vantage 取得最新殖利率 ---")
+        av_yields = get_treasury_yields()
+        if av_yields['source'] != 'none':
+            yield_data = {
+                '3M': av_yields['3month'],
+                '10Y': av_yields['10year'],
+                '30Y': av_yields['30year']
+            }
+            yield_source = av_yields['source']
+            print(f"[Success] 殖利率資料來源: {yield_source}")
+    except ImportError:
+        print("[Warning] data_sources.yield_fetcher 模組不可用，使用圖表中的 yfinance 資料")
+    except Exception as e:
+        print(f"[Warning] Alpha Vantage 殖利率抓取過程發生錯誤: {e}")
+
     # --- FRED 美國總經指標抓取 ---
     macro_us = []
     try:
@@ -425,7 +445,7 @@ def main():
     if all_report_data:
         generate_html_report(all_report_data, current_date_str, summary_html, yield_plot,
                              all_fundamental_data, yield_data, all_market_data, all_summary_items,
-                             macro_us=macro_us)
+                             macro_us=macro_us, yield_source=yield_source)
     else: print("[Error] 沒有任何資料可生成報告。")
 
 if __name__ == "__main__":
