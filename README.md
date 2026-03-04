@@ -90,7 +90,8 @@ To ensure the professionalism and accuracy of the analysis, this project strictl
     *   **U.S. Department of Labor**: Initial Jobless Claims.
     *   **ISM (Institute for Supply Management)**: ISM Manufacturing Index.
     *   **Federal Reserve**: M2 Money Supply, Delinquency Rate.
-    *   **Yahoo Finance**: US Dollar Index (DXY), Treasury Yields.
+    *   **Yahoo Finance**: US Dollar Index (DXY).
+    *   **Alpha Vantage**: Treasury Yields (primary source, with Yahoo Finance as fallback).
 *   **Taiwan**:
     *   **National Development Council (NDC)**: [Monitoring Indicator (Signal)](https://index.ndc.gov.tw/n/zh_tw) (ensuring the latest score and color), Export Orders YoY.
     *   **Ministry of Economic Affairs**: Industrial Production Index.
@@ -116,7 +117,8 @@ To ensure the professionalism and accuracy of the analysis, this project strictl
     *   **美國勞工部**: 初次請領失業救濟金人數。
     *   **ISM (供應管理協會)**: ISM 製造業指數。
     *   **Federal Reserve (聯準會)**: M2 貨幣供給、信用卡違約率 (Delinquency Rate)。
-    *   **Yahoo Finance**: 美元指數 (DXY)、公債殖利率。
+    *   **Yahoo Finance**: 美元指數 (DXY)。
+    *   **Alpha Vantage**: 公債殖利率 (主要來源，Yahoo Finance 作為備援)。
 *   **台灣 (Taiwan)**:
     *   **國發會**: [景氣對策信號 (燈號)](https://index.ndc.gov.tw/n/zh_tw) (確保獲取最新分數與顏色)、外銷訂單年增率。
     *   **經濟部**: 工業生產指數。
@@ -296,7 +298,14 @@ cd investment_analysis
     python3 investment_analysis.py
     ```
 
-### 3. Configure the Tracking List (`config.json`)
+### 3. API Keys (Optional)
+To enable programmatic data fetching (reduces reliance on AI web search):
+*   **FRED API**: Set `FRED_API_KEY` environment variable or add to `config.json > api_keys.fred`. Get a free key at [https://fred.stlouisfed.org/docs/api/api_key.html](https://fred.stlouisfed.org/docs/api/api_key.html).
+*   **Alpha Vantage**: Set `ALPHA_VANTAGE_API_KEY` environment variable or add to `config.json > api_keys.alpha_vantage`. Get a free key at [https://www.alphavantage.co/support/#api-key](https://www.alphavantage.co/support/#api-key).
+
+Without API keys, the system gracefully falls back to yfinance or AI web search.
+
+### 4. Configure the Tracking List (`config.json`)
 You can customize the assets you want to track by modifying `config.json`. The file structure is as follows:
 
 *   **`stock_groups`**: Defines the classification groups in the report.
@@ -336,7 +345,14 @@ cd investment_analysis
     python3 investment_analysis.py
     ```
 
-### 3. 設定追蹤清單 (`config.json`)
+### 3. API 金鑰設定 (選配)
+啟用程式化資料抓取 (減少對 AI 網路搜尋的依賴)：
+*   **FRED API**: 設定環境變數 `FRED_API_KEY` 或填入 `config.json > api_keys.fred`。免費申請：[https://fred.stlouisfed.org/docs/api/api_key.html](https://fred.stlouisfed.org/docs/api/api_key.html)。
+*   **Alpha Vantage**: 設定環境變數 `ALPHA_VANTAGE_API_KEY` 或填入 `config.json > api_keys.alpha_vantage`。免費申請：[https://www.alphavantage.co/support/#api-key](https://www.alphavantage.co/support/#api-key)。
+
+未設定 API 金鑰時，系統會自動降級至 yfinance 或 AI 網路搜尋。
+
+### 4. 設定追蹤清單 (`config.json`)
 您可以透過修改 `config.json` 來自定義想追蹤的標的。檔案結構如下：
 
 *   **`stock_groups`**: 定義報告中的分類群組。

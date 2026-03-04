@@ -46,7 +46,8 @@
         }
     },
     "api_keys": {
-        "fred": ""
+        "fred": "",
+        "alpha_vantage": ""
     },
     "symbol_name_map": {
         "^VIX": "恐慌指數",
