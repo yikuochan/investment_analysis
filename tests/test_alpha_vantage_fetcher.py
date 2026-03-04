@@ -60,3 +60,47 @@ class TestFetchTreasuryYield(unittest.TestCase):
         """測試無效期限參數"""
         with self.assertRaises(ValueError):
             fetch_treasury_yield('invalid')
+
+    @patch('data_sources.alpha_vantage_fetcher.get_api_key')
+    def test_fetch_treasury_yield_no_api_key(self, mock_get_key):
+        """測試無 API key 時回傳 None"""
+        mock_get_key.return_value = None
+        result = fetch_treasury_yield('3month')
+        self.assertIsNone(result)
+
+    @patch('data_sources.alpha_vantage_fetcher.get_api_key')
+    @patch('data_sources.alpha_vantage_fetcher.requests.get')
+    def test_fetch_treasury_yield_network_error(self, mock_get, mock_get_key):
+        """測試網路錯誤時回傳 None"""
+        mock_get_key.return_value = 'test_key'
+        mock_get.side_effect = requests.Timeout()
+        result = fetch_treasury_yield('3month')
+        self.assertIsNone(result)
+
+    @patch('data_sources.alpha_vantage_fetcher.get_api_key')
+    @patch('data_sources.alpha_vantage_fetcher.requests.get')
+    def test_fetch_treasury_yield_empty_data(self, mock_get, mock_get_key):
+        """測試空資料回應時回傳 None"""
+        mock_get_key.return_value = 'test_key'
+        mock_response = Mock()
+        mock_response.status_code = 200
+        mock_response.json.return_value = {}
+        mock_response.raise_for_status = Mock()
+        mock_get.return_value = mock_response
+        result = fetch_treasury_yield('3month')
+        self.assertIsNone(result)
+
+    @patch('data_sources.alpha_vantage_fetcher.get_api_key')
+    @patch('data_sources.alpha_vantage_fetcher.requests.get')
+    def test_fetch_treasury_yield_dot_value(self, mock_get, mock_get_key):
+        """測試 Alpha Vantage 回傳 '.' 值時回傳 None"""
+        mock_get_key.return_value = 'test_key'
+        mock_response = Mock()
+        mock_response.status_code = 200
+        mock_response.json.return_value = {
+            'data': [{'date': '2026-03-04', 'value': '.'}]
+        }
+        mock_response.raise_for_status = Mock()
+        mock_get.return_value = mock_response
+        result = fetch_treasury_yield('3month')
+        self.assertIsNone(result)
