@@ -33,3 +33,51 @@ def get_api_key():
         pass
 
     return None
+
+
+VALID_MATURITIES = {'3month', '2year', '5year', '7year', '10year', '30year'}
+
+API_BASE_URL = 'https://www.alphavantage.co/query'
+
+
+def fetch_treasury_yield(maturity, timeout=10):
+    """抓取美債殖利率
+
+    Args:
+        maturity (str): 期限，可選 '3month', '2year', '5year', '7year', '10year', '30year'
+        timeout (int): 請求超時時間（秒）
+
+    Returns:
+        float or None: 殖利率（百分比），失敗時回傳 None
+    """
+    if maturity not in VALID_MATURITIES:
+        raise ValueError(f"Invalid maturity: {maturity}. Must be one of {VALID_MATURITIES}")
+
+    api_key = get_api_key()
+    if not api_key:
+        return None
+
+    params = {
+        'function': 'TREASURY_YIELD',
+        'interval': 'daily',
+        'maturity': maturity,
+        'apikey': api_key
+    }
+
+    try:
+        response = requests.get(API_BASE_URL, params=params, timeout=timeout)
+        response.raise_for_status()
+
+        data = response.json()
+
+        if 'data' in data and len(data['data']) > 0:
+            latest = data['data'][0]
+            value = latest.get('value', '.')
+            if value == '.':
+                return None
+            return float(value)
+
+        return None
+
+    except (requests.RequestException, ValueError, KeyError, IndexError):
+        return None

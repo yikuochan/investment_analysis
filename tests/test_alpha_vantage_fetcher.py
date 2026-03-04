@@ -2,8 +2,9 @@
 import os
 import json
 import unittest
-from unittest.mock import patch, mock_open
-from data_sources.alpha_vantage_fetcher import get_api_key
+from unittest.mock import patch, mock_open, Mock
+import requests
+from data_sources.alpha_vantage_fetcher import get_api_key, fetch_treasury_yield
 
 
 class TestAlphaVantageAPIKey(unittest.TestCase):
@@ -27,3 +28,35 @@ class TestAlphaVantageAPIKey(unittest.TestCase):
         """測試無 API key 時回傳 None"""
         key = get_api_key()
         self.assertIsNone(key)
+
+
+class TestFetchTreasuryYield(unittest.TestCase):
+
+    @patch('data_sources.alpha_vantage_fetcher.get_api_key')
+    @patch('data_sources.alpha_vantage_fetcher.requests.get')
+    def test_fetch_treasury_yield_success(self, mock_get, mock_get_key):
+        """測試成功抓取美債殖利率"""
+        mock_get_key.return_value = 'test_key'
+
+        mock_response = Mock()
+        mock_response.status_code = 200
+        mock_response.json.return_value = {
+            'data': [
+                {'date': '2026-03-04', 'value': '4.52'}
+            ]
+        }
+        mock_response.raise_for_status = Mock()
+        mock_get.return_value = mock_response
+
+        result = fetch_treasury_yield('3month')
+
+        self.assertEqual(result, 4.52)
+        mock_get.assert_called_once()
+        call_kwargs = mock_get.call_args[1]
+        self.assertEqual(call_kwargs['params']['function'], 'TREASURY_YIELD')
+        self.assertEqual(call_kwargs['params']['maturity'], '3month')
+
+    def test_fetch_treasury_yield_invalid_maturity(self):
+        """測試無效期限參數"""
+        with self.assertRaises(ValueError):
+            fetch_treasury_yield('invalid')
