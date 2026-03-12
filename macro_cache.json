@@ -1,81 +1,81 @@
 {
     "US_MACRO": [
         {
-            "name": "國內生產毛額 (GDP) Q4",
+            "name": "國內生產毛額 (GDP)",
             "value": "1.4%",
-            "note": "2025 Q4 (年化初值)",
             "trend": "down",
-            "last_updated": "2026-02-26"
+            "note": "2025 Q4",
+            "last_updated": "2026-03-12"
         },
         {
             "name": "消費者物價指數 (CPI)",
-            "value": "2.4%",
-            "note": "2026-01 (YoY)",
+            "value": "2.7%",
             "trend": "down",
-            "last_updated": "2026-02-26"
+            "note": "2026-02 (YoY)",
+            "last_updated": "2026-03-12"
+        },
+        {
+            "name": "核心消費者物價指數 (Core CPI)",
+            "value": "2.7%",
+            "trend": "down",
+            "note": "2026-02 (YoY)",
+            "last_updated": "2026-03-12"
         },
         {
             "name": "生產者物價指數 (PPI)",
-            "value": "3.0%",
-            "note": "2025-12 (YoY)",
-            "trend": "up",
-            "last_updated": "2026-02-26"
+            "value": "1.6%",
+            "trend": "down",
+            "note": "2026-01 (YoY)",
+            "last_updated": "2026-03-12"
         },
         {
             "name": "零售銷售 (Retail Sales)",
-            "value": "+5.72%",
-            "note": "2026-01 (YoY)",
-            "trend": "up",
-            "last_updated": "2026-02-26"
+            "value": "-0.2%",
+            "trend": "down",
+            "note": "2026-01 (MoM)",
+            "last_updated": "2026-03-12"
         },
         {
             "name": "非農就業人口",
-            "value": "+13.0萬",
-            "note": "2026-01",
-            "trend": "up",
-            "last_updated": "2026-02-26"
+            "value": "-9.2萬",
+            "trend": "down",
+            "note": "2026-02",
+            "last_updated": "2026-03-12"
         },
         {
             "name": "失業率",
-            "value": "4.3%",
-            "note": "2026-01",
-            "trend": "neutral",
-            "last_updated": "2026-02-26"
+            "value": "4.4%",
+            "trend": "up",
+            "note": "2026-02",
+            "last_updated": "2026-03-12"
         },
         {
             "name": "初領失業金人數",
-            "value": "20.6萬",
-            "note": "截至 2/14",
-            "trend": "down",
-            "last_updated": "2026-02-26"
+            "value": "21.3萬",
+            "trend": "flat",
+            "note": "截至 2/28",
+            "last_updated": "2026-03-12"
         },
         {
-            "name": "ISM 製造業指數",
-            "value": "52.6",
-            "note": "2026-01 (擴張)",
+            "name": "密西根消費者信心指數",
+            "value": "56.4",
             "trend": "up",
-            "last_updated": "2026-02-26"
+            "note": "2026-01",
+            "last_updated": "2026-03-12"
+        },
+        {
+            "name": "聯邦基金利率",
+            "value": "3.6%",
+            "trend": "flat",
+            "note": "2026-02",
+            "last_updated": "2026-03-12"
         },
         {
             "name": "M2 貨幣供給",
-            "value": "22.41兆",
-            "note": "2025-12",
+            "value": "4.3%",
             "trend": "up",
-            "last_updated": "2026-02-26"
-        },
-        {
-            "name": "美元指數 (DXY)",
-            "value": "97.80",
-            "note": "2026-02-26",
-            "trend": "up",
-            "last_updated": "2026-02-26"
-        },
-        {
-            "name": "實質私人投資",
-            "value": "3.8%",
-            "note": "2025 Q4 (成長率)",
-            "trend": "up",
-            "last_updated": "2026-02-26"
+            "note": "2026-01 (YoY)",
+            "last_updated": "2026-03-12"
         }
     ],
     "TW_MACRO": [

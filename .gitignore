@@ -147,3 +147,5 @@ cython_debug/
 .DS_Store
 Thumbs.db
 GEMINI.md.bak
+# Config with API keys
+config.json
